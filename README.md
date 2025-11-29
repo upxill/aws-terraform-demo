@@ -2,6 +2,7 @@
 
 A simple Terraform configuration demonstrating AWS infrastructure provisioning, specifically creating an S3 bucket.
 
+
 ## 📋 Overview
 
 This project provides a basic Terraform configuration to deploy AWS resources. It currently provisions an Amazon S3 bucket with proper tagging and configuration.
