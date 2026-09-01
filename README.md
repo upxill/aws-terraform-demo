@@ -1,142 +1,64 @@
-# AWS Terraform Demo
+# AWS S3 Bucket Provisioning with Terraform
 
-A simple Terraform configuration demonstrating AWS infrastructure provisioning, specifically creating an S3 bucket.
+A minimal Terraform configuration that provisions a single AWS S3 bucket using the HashiCorp AWS provider. It's a compact, self-contained reference for the core Terraform workflow (`init` → `plan` → `apply`) on AWS — a starting point rather than a production stack.
 
-## 📋 Overview
+## How this differs from my other infra/DevOps repos
 
-This project provides a basic Terraform configuration to deploy AWS resources. It currently provisions an Amazon S3 bucket with proper tagging and configuration.
+This is the AWS half of a two-cloud Terraform pairing. It provisions an S3 bucket with the AWS provider and local state, while [`terraform-demo`](../terraform-demo) provisions the equivalent object-storage resource on GCP (a GCS bucket) and wires up a Terraform Cloud remote backend/workspace. Together they show the same basic IaC pattern — "stand up one storage bucket" — implemented across two different clouds and two different state-management approaches.
 
-## 🏗️ Resources
+## Tech Stack
 
-The configuration creates the following AWS resources:
+- Terraform (>= 1.0)
+- HashiCorp AWS provider (`~> 5.0`)
+- AWS S3
 
-- **S3 Bucket** (`aws_s3_bucket.my_bucket`)
-  - Bucket name: `my-terraform-cloud-s3-example`
-  - Environment: Development
-  - Tags for resource organization and cost tracking
+## Architecture
 
-## 📋 Prerequisites
+The entire configuration lives in one file, `main.tf`:
 
-Before you begin, ensure you have the following installed:
+- A `required_providers` block pins the AWS provider to `~> 5.0`.
+- A `provider "aws"` block targets the `us-east-1` region.
+- A single `aws_s3_bucket.my_bucket` resource creates a bucket (`my-terraform-cloud-s3-example`) tagged `Name = MyBucket`, `Environment = Dev`.
 
-- [Terraform](https://www.terraform.io/downloads.html) (v1.0+)
-- [AWS CLI](https://aws.amazon.com/cli/) (optional but recommended)
-- AWS account with appropriate IAM permissions
-- AWS credentials configured locally
+There's no remote backend configured, so state is local (`terraform.tfstate` in the working directory) unless you add one yourself.
 
-### AWS Credentials Setup
+## Getting Started
 
-Configure your AWS credentials using one of these methods:
+**Prerequisites**
 
-1. **AWS CLI Configuration** (recommended):
-   ```bash
-   aws configure
-   ```
-   This will prompt you to enter your AWS Access Key ID and Secret Access Key.
+- [Terraform](https://www.terraform.io/downloads.html) v1.0+
+- An AWS account and credentials with permission to create S3 buckets
 
-2. **Environment Variables**:
-   ```bash
-   export AWS_ACCESS_KEY_ID="your-access-key"
-   export AWS_SECRET_ACCESS_KEY="your-secret-key"
-   export AWS_DEFAULT_REGION="us-east-1"
-   ```
+**Configure AWS credentials** (any one of):
 
-3. **AWS Credentials File**:
-   - Location: `~/.aws/credentials` (Linux/Mac) or `%USERPROFILE%\.aws\credentials` (Windows)
+```bash
+aws configure
+# or
+export AWS_ACCESS_KEY_ID="your-access-key"
+export AWS_SECRET_ACCESS_KEY="your-secret-key"
+export AWS_DEFAULT_REGION="us-east-1"
+```
 
-## 🚀 Getting Started
-
-### 1. Initialize Terraform
-
-Initialize your Terraform working directory:
+**Run it**
 
 ```bash
 terraform init
-```
-
-This downloads the necessary provider plugins and prepares your workspace.
-
-### 2. Review the Plan
-
-Preview the resources that will be created:
-
-```bash
 terraform plan
-```
-
-### 3. Apply Configuration
-
-Apply the Terraform configuration to create resources in AWS:
-
-```bash
 terraform apply
 ```
 
-Review the proposed changes and type `yes` to confirm.
-
-### 4. Verify Resources
-
-Check your AWS console or use the AWS CLI to verify the S3 bucket was created:
-
-```bash
-aws s3 ls
-```
-
-## 🔄 Terraform Commands
-
-Common Terraform commands for this project:
-
-| Command | Description |
-|---------|-------------|
-| `terraform init` | Initialize working directory |
-| `terraform plan` | Show changes required by configuration |
-| `terraform apply` | Apply changes to real infrastructure |
-| `terraform destroy` | Remove all remote objects managed by this configuration |
-| `terraform validate` | Validate the configuration files |
-| `terraform fmt` | Reformat configuration files to canonical format |
-| `terraform state list` | List all resources in the state file |
-
-## 🗑️ Cleanup
-
-To remove all resources created by this configuration:
+**Tear down**
 
 ```bash
 terraform destroy
 ```
 
-Type `yes` when prompted to confirm the destruction.
+> Note: `main.tf` sets `acl = "private"` directly on `aws_s3_bucket`. That inline `acl` argument was removed from the AWS provider in v4+ and this config pins `~> 5.0`, so `terraform apply` will likely fail as written — see Cleanup Notes.
 
-## 📝 Configuration Details
+## Project Structure
 
-### Provider Configuration
-- **Provider**: AWS
-- **Region**: `us-east-1`
-- **Version**: `~> 5.0` (Terraform AWS Provider v5.x)
-
-### S3 Bucket Tags
-- `Name`: MyBucket
-- `Environment`: Dev
-
-## 🔐 Security Notes
-
-- Never commit AWS credentials or sensitive data to version control
-- Consider using AWS SSO for authentication in production
-- Use IAM roles and policies for least-privilege access
-- Regularly rotate access keys
-- Enable S3 bucket versioning and encryption for production use
-- Consider using Terraform Cloud for remote state management
-
-## 📚 Additional Resources
-
-- [Terraform AWS Provider Documentation](https://registry.terraform.io/providers/hashicorp/aws/latest/docs)
-- [Terraform Best Practices](https://www.terraform.io/docs/cloud/guides/recommended-practices/index.html)
-- [AWS S3 Documentation](https://docs.aws.amazon.com/s3/)
-- [Terraform State Management](https://www.terraform.io/docs/language/state/)
-
-## 🤝 Contributing
-
-Feel free to submit issues and enhancement requests!
-
-## 📄 License
-
-This project is provided as-is for educational and demonstration purposes.
+```
+aws-terraform-demo/
+├── main.tf      # provider config + single S3 bucket resource
+└── README.md
+```
