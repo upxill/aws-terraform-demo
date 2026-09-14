@@ -4,7 +4,7 @@ A minimal Terraform configuration that provisions a single AWS S3 bucket using t
 
 ## How this differs from my other infra/DevOps repos
 
-This is the AWS half of a two-cloud Terraform pairing. It provisions an S3 bucket with the AWS provider and local state, while [`terraform-demo`](../terraform-demo) provisions the equivalent object-storage resource on GCP (a GCS bucket) and wires up a Terraform Cloud remote backend/workspace. Together they show the same basic IaC pattern — "stand up one storage bucket" — implemented across two different clouds and two different state-management approaches.
+This is the AWS half of a two-cloud Terraform pairing. It provisions an S3 bucket with the AWS provider and local state, while [`gcp-terraform-demo`](../gcp-terraform-demo) provisions the equivalent object-storage resource on GCP (a GCS bucket) and wires up a Terraform Cloud remote backend/workspace. Together they show the same basic IaC pattern — "stand up one storage bucket" — implemented across two different clouds and two different state-management approaches.
 
 ## Tech Stack
 
